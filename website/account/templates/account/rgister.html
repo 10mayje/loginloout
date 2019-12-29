@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form method="POST" >
+    {% csrf_token %}
+    <div><label>first name</label>
+        <input type="text" name="first_name" ></div><br>
+   <div><label>last name</label>
+        <input type="text" name="last_name"></div><br>
+    <div><label>Username</label>
+        <input type="text" name="username" required></div><br>
+   <div><label>email</label>
+        <input type="email" name="email" required></div><br>
+    <div><label>password</label>
+        <input type="password" name="password1" required></div><br>
+     <div><label>conform password</label>
+        <input type="password" name="password2" required></div><br>
+
+      <input type="submit" name="submit">
+</form>
+{% for mes in messages %}
+    <h3>{{ mes }}</h3>
+{% endfor %}
+</body>
+</html>

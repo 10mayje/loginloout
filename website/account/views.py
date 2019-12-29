@@ -1,0 +1,98 @@
+from django.shortcuts import render,redirect
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
+from django.contrib.auth.models import User,auth
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .forms import dform
+posts=[
+    {
+        'author':'tanmay',
+        'tittle':'test',
+        'work':'web',
+
+    },
+    {
+        'author': 'tanmayto',
+        'tittle': 'test2',
+        'work': 'web2',
+
+    }
+
+]
+
+# Create your views here
+def home(request):
+    context={
+        'posts':posts
+    }
+    return render(request,"account/index.html",context)
+def new(request):
+    return render(request,"account/html.html")
+
+def register(request):
+    if request.method=='POST':
+        form =UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request,"account/index.html")
+    else:
+        form=UserCreationForm()
+
+    return render(request,'account/test.html',{'form':form})
+
+def test(request):
+    if request.method=='POST':
+        form=dform(request.POST)
+        if form.is_valid():
+            v=form.save(commit=False)
+            v.save()
+            return render(request,'account/index.html')
+
+    else:
+        form=dform()
+    return render(request,'account/test.html',{'form':form})
+def reg(request):
+    if request.method=='POST':
+        first_name=request.POST['first_name']
+        last_name=request.POST['last_name']
+        username=request.POST['username']
+        email=request.POST['email']
+        password1=request.POST['password1']
+        password2=request.POST['password2']
+        if password1==password2:
+            if User.objects.filter(username=username).exists():
+                messages.info(request,'Username taken')
+                return redirect('account/reg')
+            elif User.objects.filter(email=email).exists():
+                messages.info(request,'email taken ')
+                return redirect('account/reg')
+
+            else:
+
+                user=User.objects.create(username=username,password=password1,email=email,first_name=first_name,last_name=last_name)
+                user.save()
+                return redirect("/")
+
+        else:
+            messages.info(request,'password is not equal to conform password')
+            return redirect('account/reg')
+
+
+    return render(request,'account/rgister.html')
+def login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user=auth.authenticate(username=username,password=password)
+        if user is not None:
+            auth.login(request,user)
+            return redirect("/")
+        else:
+            messages.info(request,'invalid username or password')
+            return redirect("account/log")
+
+
+    return render(request,'account/login2.html')
+def logout(request):
+    auth.logout(request)
+    return redirect('/')
